@@ -1,22 +1,36 @@
 <?php
-
 use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
-
-/**
- * Defines application features from the specific context.
- */
-class FeatureContext implements Context
+use Behat\Behat\Tester\Exception\PendingException;
+use Behat\MinkExtension\Context\MinkContext;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+class FeatureContext extends MinkContext implements Context
 {
-    /**
-     * Initializes context.
-     *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
-     */
-    public function __construct()
-    {
-    }
+/**
+* @Given I am a registered user with email :email and password :password
+*/
+public function iAmARegisteredUserWithEmailAndPassword($email, $password)
+{
+    User::create([
+        'name' => 'John Doe',
+        'email' => $email,
+        'password' => Hash::make($password),
+
+]);
+}
+/**
+* @Then I should be redirected to the dashboard
+*/
+public function iShouldBeRedirectedToTheDashboard()
+{
+$this->assertPageAddress('/dashboard');
+}
+/**
+* @Then I should see :text
+*/
+public function iShouldSee($text)
+{
+$this->assertPageContainsText($text);
+}
+
 }
